@@ -23,7 +23,8 @@ app.get("/sync", async (req, res) => {
 try {
 
 const response = await axios.get(
-"https://www.thesportsdb.com/api/v1/json/3/eventslastleague.php?id=4328");
+"https://www.thesportsdb.com/api/v1/json/3/eventslastleague.php?id=4387"
+);
 
 const eventos = response.data.events;
 
@@ -40,7 +41,7 @@ await db.collection("eventos").doc(evento.idEvent).set({
 equipoA: evento.strHomeTeam,
 equipoB: evento.strAwayTeam,
 fecha: evento.strTimestamp,
-competicion: "Premier League",
+competicion: "NBA",
 
 });
 
