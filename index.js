@@ -23,8 +23,7 @@ app.get("/sync", async (req, res) => {
 try {
 
 const response = await axios.get(
-"https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4328"
-);
+"https://www.thesportsdb.com/api/v1/json/3/eventslastleague.php?id=4328");
 
 const eventos = response.data.events;
 
