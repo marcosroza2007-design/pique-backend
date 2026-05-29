@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./pique-9ca6a-firebase-adminsdk-fbsvc-6dc238b5f6.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
 
 admin.initializeApp({
 credential: admin.credential.cert(serviceAccount),
