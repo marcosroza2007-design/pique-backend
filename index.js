@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 const admin = require("firebase-admin");
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
@@ -17,15 +18,24 @@ app.get("/", (req, res) => {
 
 app.get("/sync", async (req, res) => {
   try {
-    await db.collection("eventos").doc("prueba").set({
-      mensaje: "Firebase conectado correctamente",
+
+    const response = await axios.get(
+      "https://www.thesportsdb.com/api/v1/json/3/all_sports.php"
+    );
+
+    await db.collection("pruebas").doc("api").set({
       fecha: new Date().toISOString(),
+      datos: response.data.sports.length,
     });
 
-    res.send("Documento guardado en Firebase");
+    res.send(`API funcionando. Deportes encontrados: ${response.data.sports.length}`);
+
   } catch (e) {
+
     console.log(e);
+
     res.status(500).send("Error");
+
   }
 });
 
