@@ -8,20 +8,54 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
+const db = admin.firestore();
 const app = express();
 
 app.get("/", (req, res) => {
   res.send("Backend funcionando");
 });
 
-app.get("/ligas", async (req, res) => {
+app.get("/sync", async (req, res) => {
   try {
 
-    const response = await axios.get(
-      "https://www.thesportsdb.com/api/v1/json/3/all_leagues.php"
-    );
+    const deportes = [
+      "Soccer",
+      "Basketball",
+      "Tennis",
+      "Motorsport",
+      "American Football"
+    ];
 
-    res.json(response.data);
+    let totalEventos = 0;
+
+    const hoy = new Date().toISOString().split("T")[0];
+
+    for (const deporte of deportes) {
+
+      const response = await axios.get(
+        `https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=${hoy}&s=${encodeURIComponent(deporte)}`
+      );
+
+      const eventos = response.data.events;
+
+      if (!eventos) continue;
+
+      for (const evento of eventos) {
+
+        await db.collection("eventos").doc(evento.idEvent).set({
+          deporte: evento.strSport || deporte,
+          competicion: evento.strLeague || "",
+          equipoA: evento.strHomeTeam || "",
+          equipoB: evento.strAwayTeam || "",
+          fecha: evento.strTimestamp || "",
+          estado: "pendiente",
+        });
+
+        totalEventos++;
+      }
+    }
+
+    res.send(`Eventos guardados: ${totalEventos}`);
 
   } catch (e) {
 
