@@ -8,27 +8,20 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-const db = admin.firestore();
-
 const app = express();
 
 app.get("/", (req, res) => {
   res.send("Backend funcionando");
 });
 
-app.get("/sync", async (req, res) => {
+app.get("/ligas", async (req, res) => {
   try {
 
     const response = await axios.get(
-      "https://www.thesportsdb.com/api/v1/json/3/all_sports.php"
+      "https://www.thesportsdb.com/api/v1/json/3/all_leagues.php"
     );
 
-    await db.collection("pruebas").doc("api").set({
-      fecha: new Date().toISOString(),
-      datos: response.data.sports.length,
-    });
-
-    res.send(`API funcionando. Deportes encontrados: ${response.data.sports.length}`);
+    res.json(response.data);
 
   } catch (e) {
 
