@@ -49,7 +49,11 @@ app.get("/sync", async (req, res) => {
 
         const competicion = evento.strLeague || "";
 
-        console.log(evento.strLeague, "-", evento.strSport);
+        console.log(
+          evento.strLeague,
+          "-",
+          evento.strSport
+        );
 
         if (!competicionesPermitidas.includes(competicion)) {
           continue;
@@ -103,6 +107,23 @@ app.get("/ligas", async (req, res) => {
     }
 
     res.json(resultado);
+
+  } catch (e) {
+
+    console.log(e);
+    res.status(500).send("Error");
+
+  }
+});
+
+app.get("/ligas-tenis", async (req, res) => {
+  try {
+
+    const response = await axios.get(
+      "https://www.thesportsdb.com/api/v1/json/3/search_all_leagues.php?s=Tennis"
+    );
+
+    res.json(response.data);
 
   } catch (e) {
 
