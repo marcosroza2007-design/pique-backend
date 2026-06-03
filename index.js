@@ -27,13 +27,7 @@ app.get("/sync", async (req, res) => {
     ];
 
     const competicionesPermitidas = [
-      "Champions League",
-      "Mundial",
       "NBA",
-      "Premier League",
-      "Spanish La Liga",
-      "UEFA Euro",
-      "Copa America",
       "ATP World Tour"
     ];
 
@@ -53,19 +47,15 @@ app.get("/sync", async (req, res) => {
 
       for (const evento of eventos) {
 
-  const competicion = evento.strLeague || "";
+        const competicion = evento.strLeague || "";
 
-  console.log(
-    evento.strLeague,
-    "-",
-    evento.strSport
-  );
+        console.log(evento.strLeague, "-", evento.strSport);
 
-  if (!competicionesPermitidas.includes(competicion)) {
-    continue;
-  }
+        if (!competicionesPermitidas.includes(competicion)) {
+          continue;
+        }
 
-  await db.collection("eventos").doc(evento.idEvent).set({
+        await db.collection("eventos").doc(evento.idEvent).set({
           deporte: evento.strSport || deporte,
           competicion: competicion,
           equipoA: evento.strHomeTeam || "",
@@ -91,11 +81,28 @@ app.get("/sync", async (req, res) => {
 app.get("/ligas", async (req, res) => {
   try {
 
-    const response = await axios.get(
-      "https://www.thesportsdb.com/api/v1/json/3/all_leagues.php"
-    );
+    const deportes = [
+      "Soccer",
+      "Basketball",
+      "Tennis",
+      "Motorsport",
+      "American Football"
+    ];
 
-    res.json(response.data);
+    let resultado = [];
+
+    for (const deporte of deportes) {
+
+      const response = await axios.get(
+        `https://www.thesportsdb.com/api/v1/json/3/search_all_leagues.php?s=${encodeURIComponent(deporte)}`
+      );
+
+      if (response.data.countries) {
+        resultado.push(...response.data.countries);
+      }
+    }
+
+    res.json(resultado);
 
   } catch (e) {
 
