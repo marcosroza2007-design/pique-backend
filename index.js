@@ -26,6 +26,17 @@ app.get("/sync", async (req, res) => {
       "American Football"
     ];
 
+    const competicionesPermitidas = [
+      "Champions League",
+      "Mundial",
+      "NBA",
+      "Premier League",
+      "Spanish La Liga",
+      "UEFA Euro",
+      "Copa America",
+      "ATP World Tour"
+    ];
+
     let totalEventos = 0;
 
     const hoy = new Date().toISOString().split("T")[0];
@@ -42,9 +53,15 @@ app.get("/sync", async (req, res) => {
 
       for (const evento of eventos) {
 
+        const competicion = evento.strLeague || "";
+
+        if (!competicionesPermitidas.includes(competicion)) {
+          continue;
+        }
+
         await db.collection("eventos").doc(evento.idEvent).set({
           deporte: evento.strSport || deporte,
-          competicion: evento.strLeague || "",
+          competicion: competicion,
           equipoA: evento.strHomeTeam || "",
           equipoB: evento.strAwayTeam || "",
           fecha: evento.strTimestamp || "",
@@ -60,7 +77,23 @@ app.get("/sync", async (req, res) => {
   } catch (e) {
 
     console.log(e);
+    res.status(500).send("Error");
 
+  }
+});
+
+app.get("/ligas", async (req, res) => {
+  try {
+
+    const response = await axios.get(
+      "https://www.thesportsdb.com/api/v1/json/3/all_leagues.php"
+    );
+
+    res.json(response.data);
+
+  } catch (e) {
+
+    console.log(e);
     res.status(500).send("Error");
 
   }
