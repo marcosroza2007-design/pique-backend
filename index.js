@@ -53,13 +53,19 @@ app.get("/sync", async (req, res) => {
 
       for (const evento of eventos) {
 
-        const competicion = evento.strLeague || "";
+  const competicion = evento.strLeague || "";
 
-        if (!competicionesPermitidas.includes(competicion)) {
-          continue;
-        }
+  console.log(
+    evento.strLeague,
+    "-",
+    evento.strSport
+  );
 
-        await db.collection("eventos").doc(evento.idEvent).set({
+  if (!competicionesPermitidas.includes(competicion)) {
+    continue;
+  }
+
+  await db.collection("eventos").doc(evento.idEvent).set({
           deporte: evento.strSport || deporte,
           competicion: competicion,
           equipoA: evento.strHomeTeam || "",
