@@ -132,7 +132,27 @@ app.get("/ligas-tenis", async (req, res) => {
 
   }
 });
+  app.get("/evento/:id", async (req, res) => {
 
+  try {
+
+    const id = req.params.id;
+
+    const response = await axios.get(
+      `https://www.thesportsdb.com/api/v1/json/3/lookupevent.php?id=${id}`
+    );
+
+    res.json(response.data);
+
+  } catch (e) {
+
+    console.log(e);
+
+    res.status(500).send("Error");
+
+  }
+
+});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
